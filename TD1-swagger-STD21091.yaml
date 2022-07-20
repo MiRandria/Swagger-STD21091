@@ -58,7 +58,117 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequest'
-          
+                
+ /students/{id}:
+    get:
+      tags:
+        - Students
+      operationId: getSpecifiedStudent
+      summary: Get specified student
+      description: Get specified student
+      parameters :
+        - name: id
+          in: path
+          required : true
+      responses:
+        200: 
+          description: student
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Student'
+                  
+        400:
+          description: Bad request 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'  
+    put:
+      tags:
+        - Students
+      operationId: createOrUpdateStudents
+      summary:  Create new students or update existing students
+      description:   Update students when `id` are provided, create them otherwise.
+      parameters :
+        - name: id
+          in: path
+          required : true
+        - name: birth_date
+          in: path
+          required : true
+        - name: name
+          in: path
+          required : true
+        - name: toChange 
+          required : true
+      responses:
+        200: 
+          description: The created or updated students
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Student'
+                  
+        400:
+          description: Bad request 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest' 
+                
+    patch:
+      tags:
+        - Students
+      operationId: PartialModifyStudent
+      summary:  Partial Modify student
+      description:  Partial  Modify student
+      parameters :
+        - name: id
+          in: path
+          required : true
+        - name: ElementToChange
+          in: path
+          required : true
+        - name: toChange 
+          required : true
+       
+      responses:
+        200: 
+          description: mofidified student
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Student'
+                  
+        400:
+          description: Bad request 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+    delete:
+      tags:
+        - Students
+      operationId: DeleteSpecifiedStudent
+      summary:  Delete Specified student
+      description:  Delete Specified student
+      parameters :
+        - name: id
+          in: path
+          required : true
+        
+      responses:
+        200: 
+          description: OK
+        
+  
  /courses :
     get:
       tags:
@@ -123,6 +233,10 @@ paths:
       operationId: getSpecifiedCourse
       summary: Get specified course
       description: Get specified course
+      parameters :
+        - name: id
+          in: path
+          required : true
       responses:
         200: 
           description: course
@@ -164,7 +278,10 @@ components:
       properties:
         name:
           type: string
-          example: "string"
+          example: "Prog"
+        teacher:
+          type: string
+          example: "Rakoto"
         date:
           type: string
           format: date
@@ -180,7 +297,4 @@ components:
     BadRequest: 
       example: {code:400-BAD-REQUEST
                  Message:Parameter are missing
-                }  
-      
-        
-        
+                }
