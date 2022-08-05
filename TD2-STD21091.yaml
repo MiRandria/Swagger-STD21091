@@ -1,28 +1,11 @@
 openapi: 3.0.1
 info:
   title: STD21091-TD2
-  description: TD2
-  termsOfService: http://swagger.io/terms/
-  contact:
-    email: apiteam@swagger.io
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
-externalDocs:
-  description: Find out more about Swagger
-  url: http://swagger.io
 servers:
-# Added by API Auto Mocking Plugin
-- description: SwaggerHub API Auto Mocking
-  url: https://
-tags:
-- name: Rooms
-- name: Films
-- name: Projections
-- name: Categories
+- url: https://STD21091.io
 paths:
-  /room:
+  /rooms:
     get:
       tags:
         - "Rooms"
@@ -40,7 +23,7 @@ paths:
         400:
           description: Error
           content: {}
-  /room/{id}:
+  /rooms/{id}:
     get:
       tags:
         - "Rooms"
@@ -59,12 +42,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Room'
-  /film:
+  /films:
     get:
       tags:
         - "Films"
       summary: Get all Films
       operationId: getFilms
+      description: If `category` exists then return a list of films filtered by category
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            example: "Action"
       responses:
         200:
           description: Success
@@ -88,7 +78,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/NewFilm'
+                $ref: '#/components/schemas/Film'
       responses:
         200:
           description: Success
@@ -101,8 +91,53 @@ paths:
         400:
           description: Error
           content: {}
+    post:
+      tags:
+        - "Films"
+      summary: Creates some films
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/NewFilm'
+      responses:
+        200:
+          description: List of new films
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Film'
+    delete:
+      tags:
+        - "Films"
+      summary: Delete some films
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+      responses:
+        200:
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Returns the id of the deleted student"
 
-  /film/{id}:
+        400:
+          description: Error
+          content: {}
+  /films/{id}:
     get:
       tags:
         - "Films"
@@ -168,16 +203,26 @@ paths:
               schema:
                 type: string
                 example: "Returns the id of the deleted student"
-
         400:
           description: Error
           content: {}
-  /projection:
+  /projections:
     get:
       tags:
         - "Projections"
       summary: Get all projections
       operationId: getProjections
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
       responses:
         200:
           description: Success
@@ -272,7 +317,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Projection'
-  /projection/{id}:
+  /projections/{id}:
     get:
       tags:
         - "Projections"
@@ -343,7 +388,7 @@ paths:
         400:
           description: Error
           content: {}
-  /category:
+  /categories:
     get:
       tags:
         - "Categories"
@@ -443,7 +488,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Category'
-  /category/{id}:
+  /categories/{id}:
     get:
       tags:
         - "Categories"
@@ -514,7 +559,32 @@ paths:
         400:
           description: Error
           content: {}
-    
+  /calendar:
+     get:
+      tags:
+        - "Calendar"
+      summary: Get calendar in week
+      operationId: get calendar
+      parameters:
+        - name: date
+          in: path
+          schema:
+            type: string
+            format: date-time
+          required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Calendar'
+        400:
+          description: Error
+          content: {}
+
 components:
   schemas:
     Room:
@@ -538,7 +608,7 @@ components:
           type: string
         director:
           type: string
-        date:
+        released_date:
           type: string
           format: date
     Film:
@@ -564,25 +634,24 @@ components:
           type: string
           format: date-time
     Projection:
-      allOf:
-        - $ref: '#/components/schemas/Film'
-        - $ref: '#/components/schemas/Room'
       type: object
       properties:
         id:
           type: number
           example: '1'
+        hour:
+          type: string
+          format: date-time
+        film:
+          $ref: '#/components/schemas/Film'
+        room:
+          $ref: '#/components/schemas/Room'
     NewCategory:
       type: object
       properties:
         name:
           type: string
-          example: "action"
-        film:
-          type: array
-          items: 
-                  $ref: '#/components/schemas/Film'
-          
+          example: "Action"
     Category:
       type: object
       properties:
@@ -591,4 +660,59 @@ components:
           example: '1'
       allOf:
         - $ref: '#/components/schemas/NewCategory'
-     
+    Monday:
+      type: object
+      properties:
+        Monday: 
+          type: string
+          example: 08:00 AM
+        projection: 
+          $ref: '#/components/schemas/Projection'
+    Tuesday:
+       type: object
+       properties:
+        Tuesday: 
+          type: string
+          example: 08:00 AM
+        projection: 
+          $ref: '#/components/schemas/Projection'
+    Wednesday:
+        type: object
+        properties:
+         Wednesday: 
+          type: string
+          example: 08:00 AM
+         projection: 
+          $ref: '#/components/schemas/Projection'
+    Thursday:
+        type: object
+        properties:
+         Thursday: 
+          type: string
+          example: 08:00 AM
+         projection: 
+          $ref: '#/components/schemas/Projection'
+    Friday:
+        type: object
+        properties:
+         Friday: 
+          type: string
+          example: 08:00 AM
+         projection: 
+          $ref: '#/components/schemas/Projection'
+    Calendar: 
+      type: object
+      properties:
+        Monday: 
+          $ref: '#/components/schemas/Monday'
+        Tuesday:
+          $ref: '#/components/schemas/Tuesday'
+        Wednesday:
+          $ref: '#/components/schemas/Wednesday'
+        Thursday:
+          $ref: '#/components/schemas/Thursday'
+        Friday:
+          $ref: '#/components/schemas/Friday'
+        
+      
+        
